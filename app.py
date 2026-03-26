@@ -18,7 +18,7 @@ with open("columns.json", "r") as f:
 def preprocess_data(location, sqft, bath, bhk):
     x = [0] * len(data_columns)
 
-    # numeric features (same order as training)
+    # numeric features
     x[0] = sqft
     x[1] = bath
     x[2] = bhk
@@ -34,7 +34,7 @@ def preprocess_data(location, sqft, bath, bhk):
 # -------------------------------
 # Streamlit UI
 # -------------------------------
-st.title("House Price Prediction")
+st.title("🏠 House Price Prediction")
 
 st.subheader("Enter House Details")
 
