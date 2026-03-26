@@ -6,7 +6,7 @@ import json
 # -------------------------------
 # Load Model and Columns
 # -------------------------------
-model = joblib.load('model.pkl')
+model = joblib.load('banglore_home_prices_model.pickle')
 
 with open("columns.json", "r") as f:
     data_columns = json.load(f)['data_columns']
