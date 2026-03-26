@@ -16,21 +16,19 @@ with open("columns.json", "r") as f:
 # Preprocessing Function (FIXED)
 # -------------------------------
 def preprocess_data(location, sqft, bath, bhk):
-    # create dataframe with all columns = 0
-    df = pd.DataFrame([0]*len(data_columns)).T
-    df.columns = data_columns
+    x = [0] * len(data_columns)
 
-    # fill numeric values
-    df.at[0, 'total_sqft'] = sqft
-    df.at[0, 'bath'] = bath
-    df.at[0, 'bhk'] = bhk
+    # numeric features
+    x[data_columns.index('total_sqft')] = float(sqft)
+    x[data_columns.index('bath')] = float(bath)
+    x[data_columns.index('bhk')] = float(bhk)
 
-    # handle location
+    # location
     location = location.lower().strip()
     if location in data_columns:
-        df.at[0, location] = 1
+        x[data_columns.index(location)] = 1
 
-    return df
+    return pd.DataFrame([x], columns=data_columns)
 
 
 # -------------------------------
@@ -53,7 +51,10 @@ bhk = st.number_input("BHK", min_value=1)
 if st.button("Predict"):
     input_data = preprocess_data(location, sqft, bath, bhk)
 
-    # Convert to numpy array (BYPASS feature name check)
-    prediction = model.predict(input_data.values)
+    try:
+        prediction = model.predict(input_data)
+    except:
+        # fallback if sklearn complains
+        prediction = model.predict(input_data.values)
 
     st.success(f"Estimated Price: ₹ {round(prediction[0], 2)} Lakhs")
