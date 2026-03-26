@@ -16,18 +16,26 @@ with open("columns.json", "r") as f:
 # Preprocessing Function
 # -------------------------------
 def preprocess_data(location, sqft, bath, bhk):
-    # create empty dataframe with all columns
-    df = pd.DataFrame(columns=data_columns)
-    df.loc[0] = 0
+    # create zero array
+    x = [0] * len(data_columns)
 
-    # fill numeric values (IMPORTANT names)
-    df.at[0, 'total_sqft'] = sqft
-    df.at[0, 'bath'] = bath
-    df.at[0, 'bhk'] = bhk
+    # assign numeric values
+    try:
+        x[data_columns.index('total_sqft')] = sqft
+        x[data_columns.index('bath')] = bath
+        x[data_columns.index('bhk')] = bhk
+    except ValueError:
+        st.error("Column names mismatch!")
+        return None
 
-    # set location column = 1
-    if location.lower() in data_columns:
-        df.at[0, location.lower()] = 1
+    # assign location
+    location = location.lower()
+    if location in data_columns:
+        loc_index = data_columns.index(location)
+        x[loc_index] = 1
+
+    # convert to dataframe with correct column order
+    df = pd.DataFrame([x], columns=data_columns)
 
     return df
 
