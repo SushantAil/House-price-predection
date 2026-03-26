@@ -53,9 +53,7 @@ bhk = st.number_input("BHK", min_value=1)
 if st.button("Predict"):
     input_data = preprocess_data(location, sqft, bath, bhk)
 
-    # FORCE correct column alignment (CRITICAL FIX)
-    input_data = input_data.reindex(columns=data_columns, fill_value=0)
-
-    prediction = model.predict(input_data)
+    # Convert to numpy array (BYPASS feature name check)
+    prediction = model.predict(input_data.values)
 
     st.success(f"Estimated Price: ₹ {round(prediction[0], 2)} Lakhs")
