@@ -16,19 +16,20 @@ with open("columns.json", "r") as f:
 # Preprocessing Function
 # -------------------------------
 def preprocess_data(location, sqft, bath, bhk):
-    x = [0] * len(data_columns)
+    # create empty dataframe with all columns
+    df = pd.DataFrame(columns=data_columns)
+    df.loc[0] = 0
 
-    # numeric features
-    x[0] = sqft
-    x[1] = bath
-    x[2] = bhk
+    # fill numeric values (IMPORTANT names)
+    df.at[0, 'total_sqft'] = sqft
+    df.at[0, 'bath'] = bath
+    df.at[0, 'bhk'] = bhk
 
-    # one-hot encoding for location
-    if location in data_columns:
-        loc_index = data_columns.index(location)
-        x[loc_index] = 1
+    # set location column = 1
+    if location.lower() in data_columns:
+        df.at[0, location.lower()] = 1
 
-    return pd.DataFrame([x], columns=data_columns)
+    return df
 
 
 # -------------------------------
