@@ -13,29 +13,22 @@ with open("columns.json", "r") as f:
 
 
 # -------------------------------
-# Preprocessing Function
+# Preprocessing Function (FIXED)
 # -------------------------------
 def preprocess_data(location, sqft, bath, bhk):
-    # create zero array
-    x = [0] * len(data_columns)
+    # create dataframe with all columns = 0
+    df = pd.DataFrame([0]*len(data_columns)).T
+    df.columns = data_columns
 
-    # assign numeric values
-    try:
-        x[data_columns.index('total_sqft')] = sqft
-        x[data_columns.index('bath')] = bath
-        x[data_columns.index('bhk')] = bhk
-    except ValueError:
-        st.error("Column names mismatch!")
-        return None
+    # fill numeric values
+    df.at[0, 'total_sqft'] = sqft
+    df.at[0, 'bath'] = bath
+    df.at[0, 'bhk'] = bhk
 
-    # assign location
-    location = location.lower()
+    # handle location
+    location = location.lower().strip()
     if location in data_columns:
-        loc_index = data_columns.index(location)
-        x[loc_index] = 1
-
-    # convert to dataframe with correct column order
-    df = pd.DataFrame([x], columns=data_columns)
+        df.at[0, location] = 1
 
     return df
 
@@ -55,10 +48,14 @@ bhk = st.number_input("BHK", min_value=1)
 
 
 # -------------------------------
-# Prediction
+# Prediction (FIXED)
 # -------------------------------
 if st.button("Predict"):
     input_data = preprocess_data(location, sqft, bath, bhk)
+
+    # FORCE correct column alignment (CRITICAL FIX)
+    input_data = input_data.reindex(columns=data_columns, fill_value=0)
+
     prediction = model.predict(input_data)
 
     st.success(f"Estimated Price: ₹ {round(prediction[0], 2)} Lakhs")
